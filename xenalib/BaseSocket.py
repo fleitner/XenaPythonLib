@@ -4,7 +4,7 @@ import logging
 
 class BaseSocket:
 
-    def __init__(self, hostname, port = 5025, timeout = 1):
+    def __init__(self, hostname, port = 5025, timeout = 5):
         self.hostname = hostname
         self.port = port
         self.timeout = timeout

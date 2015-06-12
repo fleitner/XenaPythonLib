@@ -9,9 +9,9 @@ import BaseSocket
 class XenaSocket:
     reply_ok = '<OK>'
 
-    def __init__(self, hostname, port = 22611):
+    def __init__(self, hostname, port = 22611, timeout = 5):
         logging.debug("XenaSocket: initializing")
-        self.xsocket = BaseSocket.BaseSocket(hostname, port)
+        self.xsocket = BaseSocket.BaseSocket(hostname, port, timeout)
         self.access_semaphor = threading.Semaphore(1)
 
     def set_dummymode(self, enable = True):
