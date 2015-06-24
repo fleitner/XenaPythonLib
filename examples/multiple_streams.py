@@ -8,11 +8,33 @@ from xenalib.XenaSocket import XenaSocket
 from xenalib.XenaManager import XenaManager
 from xenalib.StatsCSV import write_csv
 
+
 logging.basicConfig(level=logging.INFO)
 
-pkthdr = '0x525400C61010525400C61020080045000014000000007FFF25EA0A0001010A000001'
+
+def build_test_packet():
+    try:
+        import scapy.layers.inet as inet
+        import scapy.utils as utils
+    except:
+        logging.info("Packet: Using sample packet")
+        packet_hex = '0x525400c61020525400c6101008004500001400010000400066e70a0000010a000002'
+    else:
+        logging.info("Packet: Using scapy to build the test packet")
+        L2 = inet.Ether(src="52:54:00:C6:10:10", dst="52:54:00:C6:10:20")
+        L3 = inet.IP(src="10.0.0.1", dst="10.0.0.2")
+        packet = L2/L3
+        packet_str = str(packet)
+        packet_hex = '0x' + packet_str.encode('hex')
+        # Uncomment below to see the packet in wireshark tool
+        #utils.wireshark(packet)
+
+    logging.debug("Packet string: %s", packet_hex)
+    return packet_hex
 
 def main():
+    # create the test packet
+    pkthdr = build_test_packet()
     # create the communication socket
     xsocket = XenaSocket('10.0.0.1')
     if not xsocket.connect():
