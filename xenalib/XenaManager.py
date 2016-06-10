@@ -12,7 +12,7 @@ class XenaManager:
         self.xsocket = xsocket
         self.ports = {}
         if self.logon(password):
-            logging.info("XenaManager: Logged succefully")
+            logging.info("XenaManager: Logged successfully")
         else:
             logging.error("XenaManager: Failed to log in")
             sys.exit(-1)
