@@ -1,0 +1,4 @@
+0.3
+	- Fixed bug in set_rate_pps()
+	- Fixed typo in XenaManager login message
+
