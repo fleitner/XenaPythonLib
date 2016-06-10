@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='xenalib-python',
-      version='0.2',
+      version='0.3',
       description='Python Interface To Xena Traffic Generator',
       url='http://github.com/fleitner/XenaPythonLib',
       author='Flavio Leitner',
