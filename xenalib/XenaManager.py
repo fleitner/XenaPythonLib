@@ -7,14 +7,16 @@ import threading
 import KeepAliveThread
 import XenaPort
 
+logger = logging.getLogger(__name__)
+
 class XenaManager:
     def __init__(self, xsocket, owner, password = 'xena'):
         self.xsocket = xsocket
         self.ports = {}
         if self.logon(password):
-            logging.info("XenaManager: Logged successfully")
+            logger.info("Logged successfully")
         else:
-            logging.error("XenaManager: Failed to log in")
+            logger.error("Failed to log in")
             sys.exit(-1)
 
         self.set_owner(owner)
@@ -51,7 +53,7 @@ class XenaManager:
 
     def add_port(self, module, port):
         if self.ports.has_key((module, port)):
-            logging.error("XenaManager: adding duplicated port")
+            logger.error("Adding duplicated port")
             return
 
         port_new = XenaPort.XenaPort(self.xsocket, module, port)
@@ -70,7 +72,7 @@ class XenaManager:
 
     def remove_port(self, port):
         if not self.ports.has_key((module, port)):
-            logging.error("XenaManager: deleting unknown port")
+            logger.error("Deleting unknown port")
             return
 
         port_del = self.ports.pop((module, port))

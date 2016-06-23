@@ -1,5 +1,6 @@
 import logging
 
+logger = logging.getLogger(__name__)
 class XenaModifier:
     def __init__(self, xsocket, port, stream, modifier_id):
         self.xsocket = xsocket
@@ -25,13 +26,11 @@ class XenaModifier:
 
     def set_modifier(self, headerpos, headermask, action='inc', repeat=1):
         if action != 'inc' and action != 'dec' and action != 'random':
-            logging.error('XenaMonitor: set_modified: invalid action: %s',
-                          action)
+            logger.error('set_modified: invalid action: %s', action)
             return -1
 
         if headermask > 0xffffffff:
-            logging.error('XenaMonitor: set_modified: invalid mask: %x',
-                          headermask)
+            logger.error('set_modified: invalid mask: %x', headermask)
             return -1
 
         arg_str = "%d 0x%08X %s %d" % (headerpos, headermask, action, repeat)

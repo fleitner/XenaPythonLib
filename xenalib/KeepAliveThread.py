@@ -3,7 +3,7 @@ import time
 import threading
 import logging
 
-
+logger = logging.getLogger(__name__)
 class KeepAliveThread(threading.Thread):
     def __init__(self, basesocket, interval = 10):
         threading.Thread.__init__(self)
@@ -13,20 +13,20 @@ class KeepAliveThread(threading.Thread):
         self.interval = interval
         self.finished = threading.Event()
         self.setDaemon(True)
-        logging.debug("KeepAlive: initiated")
+        logger.debug("Initiated")
 
     def get_nr_sent(self):
         return self.nr_sent
 
     def stop (self):
-        logging.debug("KeepAlive: stopping")
+        logger.debug("Stopping")
         self.finished.set()
         self.join()
 
     def run (self):
         while not self.finished.isSet():
             self.finished.wait(self.interval)
-            logging.debug("KeepAlive: pinging...")
+            logger.debug("Pinging")
             self.basesocket.sendQuery(self.message)
             self.nr_sent += 1
 

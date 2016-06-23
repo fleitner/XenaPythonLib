@@ -1,5 +1,8 @@
+import logging
 
 import XenaModifier
+
+logger = logging.getLogger(__name__)
 
 class XenaStream:
     def __init__(self, xsocket, port, stream_id):
@@ -117,7 +120,7 @@ class XenaStream:
         mid = len(self.modifiers.keys())
         tmids = mid + 1
         if not self.__sendCommand('ps_modifiercount', "%d" % tmids):
-            logging.error("XenaStream: Failed to create a modifier")
+            logger.error("Failed to create a modifier")
             return -1
 
         modnew = XenaModifier.XenaModifier(self.xsocket, self.port, self, mid)
@@ -130,7 +133,7 @@ class XenaStream:
         return None
 
     def remove_modifier(self, modifier_id):
-        logging.error("XenaStream: operation not supported")
+        logger.error("Operation not supported")
         return -1
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

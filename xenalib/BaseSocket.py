@@ -2,6 +2,8 @@ import socket
 import sys
 import logging
 
+logger = logging.getLogger(__name__)
+
 class BaseSocket:
 
     def __init__(self, hostname, port = 5025, timeout = 5):
@@ -19,14 +21,14 @@ class BaseSocket:
         return self.connected;
 
     def __connect(self):
-        logging.debug("BaseSocket: connecting")
+        logger.debug("Connecting...")
         if self.dummymode:
             return True
 
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         except socket.error, msg:
-            logging.error("Fail to create a socket: host %s:%d, error:%s",
+            logger.error("Fail to create a socket: host %s:%d, error:%s",
                           self.hostname, self.port, msg[0])
             return False
 
@@ -35,7 +37,7 @@ class BaseSocket:
         try:
 	       self.sock.connect((self.hostname, self.port))
         except socket.error, msg:
-            logging.error("Fail to connect to host %s:%d, error:%s",
+            logger.error("Fail to connect to host %s:%d, error:%s",
                           self.hostname, self.port, msg[0])
             return False
 
@@ -43,14 +45,14 @@ class BaseSocket:
 
     def connect(self):
         if self.connected:
-            logging.error("BaseSocket: connect() on a connected socket")
+            logger.error("Connect() on a connected socket")
             return
 
         if self.__connect():
             self.connected = True
 
     def disconnect(self):
-        logging.debug("BaseSocket: disconnecting")
+        logger.debug("Disconnecting")
         if not self.connected:
             return
 
@@ -59,9 +61,9 @@ class BaseSocket:
             self.sock.close()
 
     def sendCommand(self, cmd):
-        logging.debug("BaseSocket: sendCommand(%s)", cmd)
+        logger.debug("sendCommand(%s)", cmd)
         if not self.connected:
-            logging.error("BaseSocket: sendCommand() on a disconnected socket")
+            logger.error("sendCommand() on a disconnected socket")
             return -1
 
         if self.dummymode:
@@ -71,7 +73,7 @@ class BaseSocket:
             if not self.sock.send(cmd + '\n'):
                 return -1
         except socket.error, msg:
-            logging.error("Fail to send a cmd, error:%s\n", msg[0])
+            logger.error("Fail to send a cmd, error:%s\n", msg[0])
             self.disconnect()
             return -1
 
@@ -79,7 +81,7 @@ class BaseSocket:
 
     def readReply(self):
         if not self.connected:
-            logging.error("BaseSocket: readReply() on a disconnected socket")
+            logger.error("readReply() on a disconnected socket")
             return -1
 
         if self.dummymode:
@@ -87,35 +89,33 @@ class BaseSocket:
 
         reply = self.sock.recv(1024)
         if reply.find("---^") != -1:
-            logging.debug("BaseSocket: receiving a syntax error message")
+            logger.debug("Receiving a syntax error message")
             # read again the syntax error msg
             reply = self.sock.recv(1024)
 
-        logging.debug("BaseSocket: reply message(%s)", reply.strip('\n'))
+        logger.debug("Reply message(%s)", reply.strip('\n'))
         return reply
 
     def sendQuery(self, query):
-        logging.debug("BaseSocket: sendQuery(%s)", query)
+        logger.debug("sendQuery(%s)", query)
         self.sendCommand(query)
         reply = self.readReply()
         return reply
 
     def set_keepalives(self):
-        logging.debug("BaseSocket: setting socket keepalive")
+        logger.debug("Setting socket keepalive")
         if self.dummymode:
             return
 
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
 
     def set_dummymode(self, enable=True):
-        logging.debug("BaseSocket: dummy mode was %s, request to %s",
-                      self.dummymode, enable)
-
+        logger.debug("Dummy mode was %s, request to %s", self.dummymode, enable)
         if self.dummymode is enable:
             return
 
         was_connected = self.is_connected()
-        logging.warning("BaseSocket: enabling dummy mode")
+        logger.warning("BaseSocket: enabling dummy mode")
         self.disconnect()
         if enable:
             self.dummymode = True
