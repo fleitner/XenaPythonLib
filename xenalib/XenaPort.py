@@ -204,6 +204,15 @@ class XenaPort:
             rxdata = self.__parse_stats(rxstats_list)
         self.pr_stats[timestamp] = rxdata
 
+    def get_tpld_latency_stats(self, tid):
+        tpldlat_tid = {}
+        rxstats = self.__sendQuery('pr_tpldlatency [%d] ?' % tid)
+        if rxstats:
+            rxdata = self.__parse_stats([rxstats])
+            tpldlat = rxdata['pr_tpldlatency']
+            tpldlat_tid = tpldlat['%d' % tid]
+        return tpldlat_tid
+
     def set_speed(self, mbitspersec=10000):
         speed = None
         if bitspersec == 'auto':
