@@ -50,6 +50,10 @@ class XenaStream:
     def set_rate_pps(self, pps):
         return self.__sendCommand('ps_ratepps', '%d' % pps)
 
+    def get_rate_pps(self):
+        reply = self.__sendQuery('ps_ratepps', '?')
+        return reply.split()[-1]
+
     def set_packet_header(self, header):
         return self.__sendCommand('ps_packetheader', '%s' % header)
 
