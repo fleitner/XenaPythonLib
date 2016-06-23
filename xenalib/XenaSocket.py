@@ -116,7 +116,7 @@ class XenaSocket:
             logging.warning("XenaSocket: sendCommand on a disconnected socket")
             return False
 
-        resp = self.bsocket.sendQuery(cmd).strip('\n')
+        resp = self.__sendQueryReply(cmd)
         if resp == self.reply_ok:
             logging.debug("XenaSocket: sendQueryVerify(%s) Succeed", cmd)
             return True
