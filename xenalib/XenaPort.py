@@ -242,6 +242,14 @@ class XenaPort:
         logging.debug("XenaPort(%s): got port autoneg: %s", self.port_str(), status)
         return status
 
+    def get_tpld_errors_stats(self, tid):
+        reply = self.__sendQuery('pr_tplderrors [%d] ?' % tid)
+        stats = self.__pack_tplderrors_stats(reply.split(), 3)
+        logging.debug("XenaPort(%s): stats dummy:%d, seq:%d, mis:%d, lpd=%d",
+                      self.port_str(), stats['dummy'], stats['seq'],
+                      stats['mis'], stats['pld'])
+        return stats
+
     def get_total_errors_counter(self):
         reply = self.__sendQuery('p_errors ?')
         errors = int(reply.split()[-1])
