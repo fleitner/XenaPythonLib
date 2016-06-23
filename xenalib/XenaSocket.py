@@ -11,21 +11,21 @@ class XenaSocket:
 
     def __init__(self, hostname, port = 22611, timeout = 5):
         logging.debug("XenaSocket: initializing")
-        self.xsocket = BaseSocket.BaseSocket(hostname, port, timeout)
+        self.bsocket = BaseSocket.BaseSocket(hostname, port, timeout)
         self.access_semaphor = threading.Semaphore(1)
 
     def set_dummymode(self, enable = True):
         logging.debug("XenaSocket: enabling dummymode")
-        self.xsocket.set_dummymode(enable)
+        self.bsocket.set_dummymode(enable)
 
     def is_connected(self):
-        return self.xsocket.is_connected()
+        return self.bsocket.is_connected()
 
     def connect(self):
         logging.debug("XenaSocket: connect()")
         self.access_semaphor.acquire()
-        self.xsocket.connect()
-        self.xsocket.set_keepalives()
+        self.bsocket.connect()
+        self.bsocket.set_keepalives()
         self.access_semaphor.release()
         cted = self.is_connected()
         if cted:
@@ -37,12 +37,12 @@ class XenaSocket:
     def disconnect(self):
         logging.debug("XenaSocket: Disconnect()")
         self.access_semaphor.acquire()
-        self.xsocket.disconnect()
+        self.bsocket.disconnect()
         self.access_semaphor.release()
 
     def __del__(self):
         self.access_semaphor.acquire()
-        self.xsocket.disconnect()
+        self.bsocket.disconnect()
         self.access_semaphor.release()
 
     def sendCommand(self, cmd):
@@ -52,7 +52,7 @@ class XenaSocket:
             return
 
         self.access_semaphor.acquire()
-        self.xsocket.sendCommand(cmd)
+        self.bsocket.sendCommand(cmd)
         self.access_semaphor.release()
         logging.debug("XenaSocket: sendCommand(%s) returning", cmd)
 
@@ -60,10 +60,10 @@ class XenaSocket:
         # send the command followed by cmd SYNC to find out
         # when the last reply arrives.
         self.access_semaphor.acquire()
-        self.xsocket.sendCommand(cmd.strip('\n'))
-        self.xsocket.sendCommand('SYNC')
+        self.bsocket.sendCommand(cmd.strip('\n'))
+        self.bsocket.sendCommand('SYNC')
         replies = []
-        msg = self.xsocket.readReply()
+        msg = self.bsocket.readReply()
         while True:
             if '\n' in msg:
                 (reply, msgleft) = msg.split('\n', 1)
@@ -83,12 +83,12 @@ class XenaSocket:
                 msg = msgleft
             else:
                 # more bytes to come
-                msgnew = self.xsocket.readReply()
+                msgnew = self.bsocket.readReply()
                 msg = msgleft + msgnew
 
     def __sendQueryReply(self, cmd):
         self.access_semaphor.acquire()
-        reply = self.xsocket.sendQuery(cmd).strip('\n')
+        reply = self.bsocket.sendQuery(cmd).strip('\n')
         self.access_semaphor.release()
         return reply
 
@@ -116,7 +116,7 @@ class XenaSocket:
             logging.warning("XenaSocket: sendCommand on a disconnected socket")
             return False
 
-        resp = self.xsocket.sendQuery(cmd).strip('\n')
+        resp = self.bsocket.sendQuery(cmd).strip('\n')
         if resp == self.reply_ok:
             logging.debug("XenaSocket: sendQueryVerify(%s) Succeed", cmd)
             return True
