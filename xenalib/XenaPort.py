@@ -117,6 +117,8 @@ class XenaPort:
                 storage['pt_extra'] = self.__pack_txextra_stats(parms, 2)
             elif parms[1] == 'PR_EXTRA':
                 storage['pr_extra'] = self.__pack_rxextra_stats(parms, 2)
+            elif parms[1] == 'PR_PFCSTATS':
+                storage['pr_pfcstats'] = self.__pack_rxextra_stats(parms, 2)
             elif parms[1] == 'PT_STREAM':
                 entry_id = "pt_stream_%s" % parms[2].strip('[]')
                 storage[entry_id] = self.__pack_stats(parms, 3)
