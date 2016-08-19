@@ -84,20 +84,20 @@ def main():
 
     # release resources
     full_stats = port1.dump_all_rx_stats()
-    avg_lat = avg_max = avg_min = cnt = 0
+    avg_lat = max_lat = min_lat = cnt = 0
     for timestamp in full_stats.keys():
         stats = full_stats[timestamp]
         lat = stats['pr_tpldlatency']['1']['avg']
-        max_lat = stats['pr_tpldlatency']['1']['max']
-        min_lat = stats['pr_tpldlatency']['1']['min']
+        max_tmp = stats['pr_tpldlatency']['1']['max']
+        min_tmp = stats['pr_tpldlatency']['1']['min']
+        max_lat = max_tmp if max_tmp > max_lat else max_lat
+        min_lat = min_tmp if min_tmp < min_lat else min_lat
         avg_lat += lat
-        avg_max += max_lat
-        avg_min += min_lat
         cnt += 1
 
     print "Average latency: %.2f ns" % (avg_lat / cnt)
-    print "Max latency: %.2f ns" % (avg_max / cnt)
-    print "Min latency: %.2f ns" % (avg_min / cnt)
+    print "Max latency: %.2f ns" % (max_lat)
+    print "Min latency: %.2f ns" % (min_lat)
     write_csv("latency.csv", "Latency RX Stats", full_stats)
     del xm
     del xsocket
