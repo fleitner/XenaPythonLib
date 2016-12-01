@@ -479,7 +479,7 @@ class XenaPort:
             logger.error("Deleting unknown stream")
             return
 
-        stream_del = self.stream.pop(sid)
+        stream_del = self.streams.pop(sid)
         del stream_del
         return self.__sendCommand('ps_delete %s' % sid)
 
