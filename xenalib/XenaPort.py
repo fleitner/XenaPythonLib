@@ -193,7 +193,7 @@ class XenaPort:
         self.pt_stats[timestamp] = txdata
 
     def clear_all_rx_stats(self):
-        self.pt_stats = {}
+        self.pr_stats = {}
         return self.__sendCommand('pr_clear')
 
     def dump_all_rx_stats(self):
