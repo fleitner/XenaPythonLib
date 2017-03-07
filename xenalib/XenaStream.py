@@ -34,8 +34,8 @@ class XenaStream:
     def set_stream_off(self):
         return self.__sendCommand('ps_enable', 'off')
 
-    def set_stream_supress(self):
-        return self.__sendCommand('ps_enable', 'supress')
+    def set_stream_suppress(self):
+        return self.__sendCommand('ps_enable', 'suppress')
 
     def get_stream_status(self):
         reply = self.__sendQuery('ps_enable', '?')
