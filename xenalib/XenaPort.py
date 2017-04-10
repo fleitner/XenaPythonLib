@@ -481,7 +481,7 @@ class XenaPort:
 
         stream_del = self.streams.pop(sid)
         del stream_del
-        return self.__sendCommand('ps_delete %s' % sid)
+        return self.__sendCommand('ps_delete [%s]' % sid)
 
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
