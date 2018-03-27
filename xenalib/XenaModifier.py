@@ -1,6 +1,8 @@
 import logging
 
 logger = logging.getLogger(__name__)
+
+
 class XenaModifier:
     def __init__(self, xsocket, port, stream, modifier_id):
         self.xsocket = xsocket

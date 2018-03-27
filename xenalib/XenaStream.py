@@ -4,6 +4,7 @@ import XenaModifier
 
 logger = logging.getLogger(__name__)
 
+
 class XenaStream:
     def __init__(self, xsocket, port, stream_id):
         self.xsocket = xsocket
@@ -128,7 +129,7 @@ class XenaStream:
         return modnew
 
     def get_modifier(self, module, modifier_id):
-        if self.modifiers.has_key(modifier_id):
+        if modifier_id in self.modifiers:
             return self.modifiers[modifier_id]
         return None
 

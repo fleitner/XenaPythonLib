@@ -1,4 +1,3 @@
-import os
 import sys
 import time
 import logging
@@ -8,15 +7,16 @@ import BaseSocket
 
 logger = logging.getLogger(__name__)
 
+
 class XenaSocket:
     reply_ok = '<OK>'
 
-    def __init__(self, hostname, port = 22611, timeout = 5):
+    def __init__(self, hostname, port=22611, timeout=5):
         logger.debug("Initializing")
         self.bsocket = BaseSocket.BaseSocket(hostname, port, timeout)
         self.access_semaphor = threading.Semaphore(1)
 
-    def set_dummymode(self, enable = True):
+    def set_dummymode(self, enable=True):
         logger.debug("Enabling dummymode")
         self.bsocket.set_dummymode(enable)
 
@@ -124,7 +124,6 @@ class XenaSocket:
             return True
         logger.debug("SendQueryVerify(%s) Fail", cmd)
         return False
-
 
 
 def testsuite():

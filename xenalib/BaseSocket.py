@@ -4,9 +4,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class BaseSocket:
 
-    def __init__(self, hostname, port = 5025, timeout = 5):
+    def __init__(self, hostname, port=5025, timeout=5):
         self.hostname = hostname
         self.port = port
         self.timeout = timeout
@@ -18,7 +19,7 @@ class BaseSocket:
         self.disconnect()
 
     def is_connected(self):
-        return self.connected;
+        return self.connected
 
     def __connect(self):
         logger.debug("Connecting...")
@@ -29,16 +30,16 @@ class BaseSocket:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         except socket.error, msg:
             logger.error("Fail to create a socket: host %s:%d, error:%s",
-                          self.hostname, self.port, msg[0])
+                         self.hostname, self.port, msg[0])
             return False
 
         self.sock.settimeout(self.timeout)
 
         try:
-	       self.sock.connect((self.hostname, self.port))
+            self.sock.connect((self.hostname, self.port))
         except socket.error, msg:
             logger.error("Fail to connect to host %s:%d, error:%s",
-                          self.hostname, self.port, msg[0])
+                         self.hostname, self.port, msg[0])
             return False
 
         return True
@@ -110,7 +111,8 @@ class BaseSocket:
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
 
     def set_dummymode(self, enable=True):
-        logger.debug("Dummy mode was %s, request to %s", self.dummymode, enable)
+        logger.debug("Dummy mode was %s, request to %s", self.dummymode,
+                     enable)
         if self.dummymode is enable:
             return
 
@@ -126,7 +128,6 @@ class BaseSocket:
             self.connect()
 
 
-
 def testsuite():
     hostname = "127.0.0.1"
     port = 22
@@ -135,7 +136,7 @@ def testsuite():
     dummy_test_result = False
     logging.basicConfig(level=logging.DEBUG)
     s = BaseSocket(hostname, port, 1)
-    print "Connecting to %s port %d" % ( hostname, port)
+    print "Connecting to %s port %d" % (hostname, port)
     s.connect()
     if s.is_connected():
         print "Internal Status: connected"
@@ -150,7 +151,7 @@ def testsuite():
 
     print "Setting dummy mode"
     s.set_dummymode(True)
-    print "Connecting to %s port %d" % ( hostname, port)
+    print "Connecting to %s port %d" % (hostname, port)
     s.connect()
     if s.is_connected():
         print "Connected, sending query"
@@ -176,6 +177,7 @@ def testsuite():
     else:
         print "Fail, please review the output"
         sys.exit(-1)
+
 
 if __name__ == '__main__':
     testsuite()

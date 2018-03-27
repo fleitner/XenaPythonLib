@@ -1,16 +1,15 @@
-import os
 import sys
 import time
 import logging
-import threading
 
 import KeepAliveThread
 import XenaPort
 
 logger = logging.getLogger(__name__)
 
+
 class XenaManager:
-    def __init__(self, xsocket, owner, password = 'xena'):
+    def __init__(self, xsocket, owner, password='xena'):
         self.xsocket = xsocket
         self.ports = {}
         if self.logon(password):
@@ -50,9 +49,8 @@ class XenaManager:
         command = self._compose_str_command('c_owner', owner[:8])
         return self.xsocket.sendQueryVerify(command)
 
-
     def add_port(self, module, port):
-        if self.ports.has_key((module, port)):
+        if (module, port) in self.ports:
             logger.error("Adding duplicated port")
             return
 
@@ -66,19 +64,19 @@ class XenaManager:
         return port_new
 
     def get_port(self, module, port):
-        if self.ports.has_key((module, port)):
+        if (module, port) in self.ports:
             return self.ports[(module, port)]
         return None
 
-    def remove_port(self, port):
-        if not self.ports.has_key((module, port)):
+    def remove_port(self, module, port):
+        if (module, port) not in self.ports:
             logger.error("Deleting unknown port")
             return
 
         port_del = self.ports.pop((module, port))
         port_del.reset()
         port_del.release()
-        del port_obj
+        del port_del
 
     def set_module_port(self, module_port):
         self.xsocket.sendCommand(module_port)
