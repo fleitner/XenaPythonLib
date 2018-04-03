@@ -12,6 +12,11 @@ class XenaManager:
     def __init__(self, xsocket, owner, password='xena'):
         self.xsocket = xsocket
         self.ports = {}
+        self.keep_alive_thread = None
+        # FIXME: This is really weird.  The initialization can fail, which
+        # is bad practice.  But rather than do the refactor at the moment,
+        # we just set keep_alive_thread to None, and check for it in
+        # __del__
         if self.logon(password):
             logger.info("Logged successfully")
         else:
@@ -30,11 +35,13 @@ class XenaManager:
             del port_del
 
         self.ports = {}
-        self.keep_alive_thread.stop()
+        if self.keep_alive_thread:
+            self.keep_alive_thread.stop()
         # FIXME: race
         time.sleep(1)
         self.xsocket.sendQueryVerify('c_logoff')
-        del self.keep_alive_thread
+        if self.keep_alive_thread:
+            del self.keep_alive_thread
 
     def _compose_str_command(self, cmd, argument):
         command = cmd + ' \"' + argument + '\"'
