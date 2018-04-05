@@ -28,7 +28,7 @@ class BaseSocket:
 
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        except socket.error, msg:
+        except socket.error as msg:
             logger.error("Fail to create a socket: host %s:%d, error:%s",
                          self.hostname, self.port, msg[0])
             return False
@@ -37,7 +37,7 @@ class BaseSocket:
 
         try:
             self.sock.connect((self.hostname, self.port))
-        except socket.error, msg:
+        except socket.error as msg:
             logger.error("Fail to connect to host %s:%d, error:%s",
                          self.hostname, self.port, msg[0])
             return False
@@ -71,9 +71,10 @@ class BaseSocket:
             return 0
 
         try:
-            if not self.sock.send(cmd + '\n'):
+            command = cmd + '\n'
+            if not self.sock.send(command.encode("ascii", "ignore")):
                 return -1
-        except socket.error, msg:
+        except socket.error as msg:
             logger.error("Fail to send a cmd, error:%s\n", msg[0])
             self.disconnect()
             return -1
@@ -88,17 +89,19 @@ class BaseSocket:
         if self.dummymode:
             return '<OK>'
 
-        reply = self.sock.recv(1024)
+        reply = self.sock.recv(1024).decode('utf-8', 'ignore')
+
         if reply.find("---^") != -1:
             logger.debug("Receiving a syntax error message")
             # read again the syntax error msg
-            reply = self.sock.recv(1024)
+            reply = self.sock.recv(1024).decode('utf-8', 'ignore')
 
         logger.debug("Reply message(%s)", reply.strip('\n'))
         return reply
 
     def sendQuery(self, query):
         logger.debug("sendQuery(%s)", query)
+
         self.sendCommand(query)
         reply = self.readReply()
         return reply
@@ -136,46 +139,46 @@ def testsuite():
     dummy_test_result = False
     logging.basicConfig(level=logging.DEBUG)
     s = BaseSocket(hostname, port, 1)
-    print "Connecting to %s port %d" % (hostname, port)
+    print("Connecting to %s port %d" % (hostname, port))
     s.connect()
     if s.is_connected():
-        print "Internal Status: connected"
+        print("Internal Status: connected")
         s.set_keepalives()
-        print "keepalive set"
+        print("keepalive set")
         s.disconnect()
-        print "disconnected"
-        print "BasicSocket test succeed"
+        print("disconnected")
+        print("BasicSocket test succeed")
         test_result = True
     else:
-        print "Error: not connected"
+        print("Error: not connected")
 
-    print "Setting dummy mode"
+    print("Setting dummy mode")
     s.set_dummymode(True)
-    print "Connecting to %s port %d" % (hostname, port)
+    print("Connecting to %s port %d" % (hostname, port))
     s.connect()
     if s.is_connected():
-        print "Connected, sending query"
+        print("Connected, sending query")
         reply = s.sendQuery("any string")
         if reply == '<OK>':
-            print "Reply is correct, sending command"
+            print("Reply is correct, sending command")
             s.sendCommand("SYNC")
             reply = s.readReply()
             if reply == '<OK>':
-                print "Reply is correct, disconnecting"
+                print("Reply is correct, disconnecting")
                 dummy_test_result = True
-                print "Dummy test succeed"
+                print("Dummy test succeed")
             s.disconnect()
         else:
-            print "Error: reply is wrong"
+            print("Error: reply is wrong")
     else:
-        print "Error: not connected"
+        print("Error: not connected")
 
     del s
     if test_result and dummy_test_result:
-        print "All tests succeed"
+        print("All tests succeed")
         sys.exit(0)
     else:
-        print "Fail, please review the output"
+        print("Fail, please review the output")
         sys.exit(-1)
 
 

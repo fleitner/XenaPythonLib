@@ -1,6 +1,6 @@
 import logging
 
-import XenaModifier
+from . import XenaModifier
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +118,7 @@ class XenaStream:
         return self.__sendCommand('ps_insertfcs', 'off')
 
     def add_modifier(self):
-        mid = len(self.modifiers.keys())
+        mid = len(list(self.modifiers.keys()))
         tmids = mid + 1
         if not self.__sendCommand('ps_modifiercount', "%d" % tmids):
             logger.error("Failed to create a modifier")

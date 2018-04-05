@@ -1,6 +1,6 @@
 import time
 import logging
-import XenaStream
+from . import XenaStream
 
 logger = logging.getLogger(__name__)
 

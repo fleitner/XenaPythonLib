@@ -3,7 +3,7 @@ import time
 import logging
 import threading
 
-import BaseSocket
+from . import BaseSocket
 
 logger = logging.getLogger(__name__)
 
@@ -127,8 +127,8 @@ class XenaSocket:
 
 
 def testsuite():
-    import KeepAliveThread
-    import XenaSocket
+    from . import KeepAliveThread
+    from . import XenaSocket
 
     hostname = "10.16.46.156"
     port = 22611
@@ -139,22 +139,22 @@ def testsuite():
     s.set_dummymode(True)
     s.connect()
     if s.is_connected():
-        print "Connected"
+        print("Connected")
         keep_alive_thread = KeepAliveThread.KeepAliveThread(s, interval)
-        print "Starting Keep Alive Thread"
+        print("Starting Keep Alive Thread")
         keep_alive_thread.start()
         time.sleep(1)
-        print "Sending a command"
+        print("Sending a command")
         s.sendCommand("Hello World!")
-        print "Sending a query"
+        print("Sending a query")
         reply = s.sendQuery("Xena Command")
         if reply != '<OK>':
-            print "sendQuery failed"
+            print("sendQuery failed")
             sys.exit(-1)
 
-        print "Sending a query with check enabled"
+        print("Sending a query with check enabled")
         if not s.sendQueryVerify("Xena Command"):
-            print "sendQuery failed"
+            print("sendQuery failed")
             sys.exit(-1)
 
         keep_alive_thread.stop()
@@ -163,10 +163,10 @@ def testsuite():
         test_result = True
 
     if test_result:
-        print "All tests succeed"
+        print("All tests succeed")
         sys.exit(0)
     else:
-        print "Fail, please review the output"
+        print("Fail, please review the output")
         sys.exit(-1)
 
 

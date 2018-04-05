@@ -2,8 +2,8 @@ import sys
 import time
 import logging
 
-import KeepAliveThread
-import XenaPort
+from . import KeepAliveThread
+from . import XenaPort
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class XenaManager:
         self.keep_alive_thread.start()
 
     def __del__(self):
-        for pkey in self.ports.keys():
+        for pkey in list(self.ports.keys()):
             port_del = self.ports[pkey]
             port_del.reset()
             port_del.release()
