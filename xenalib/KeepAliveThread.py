@@ -1,11 +1,12 @@
-import os
 import time
 import threading
 import logging
 
 logger = logging.getLogger(__name__)
+
+
 class KeepAliveThread(threading.Thread):
-    def __init__(self, basesocket, interval = 10):
+    def __init__(self, basesocket, interval=10):
         threading.Thread.__init__(self)
         self.message = ''
         self.nr_sent = 0
@@ -18,12 +19,12 @@ class KeepAliveThread(threading.Thread):
     def get_nr_sent(self):
         return self.nr_sent
 
-    def stop (self):
+    def stop(self):
         logger.debug("Stopping")
         self.finished.set()
         self.join()
 
-    def run (self):
+    def run(self):
         while not self.finished.isSet():
             self.finished.wait(self.interval)
             logger.debug("Pinging")
@@ -31,10 +32,9 @@ class KeepAliveThread(threading.Thread):
             self.nr_sent += 1
 
 
-
 def testsuite():
     import sys
-    import BaseSocket
+    from . import BaseSocket
 
     hostname = "127.0.0.1"
     port = 22
@@ -43,14 +43,14 @@ def testsuite():
     logging.basicConfig(level=logging.DEBUG)
 
     s = BaseSocket.BaseSocket(hostname, port, 1)
-    print "Setting dummy mode"
+    print("Setting dummy mode")
     s.set_dummymode(True)
-    print "Connecting to %s port %d" % ( hostname, port)
+    print("Connecting to %s port %d" % (hostname, port))
     s.connect()
     if s.is_connected():
-        print "Connected"
+        print("Connected")
         keep_alive_thread = KeepAliveThread(s, interval)
-        print "Starting Keep Alive Thread"
+        print("Starting Keep Alive Thread")
         keep_alive_thread.start()
         time.sleep(3 * interval)
         keep_alive_thread.stop()
@@ -62,10 +62,10 @@ def testsuite():
             test_result = True
 
     if test_result:
-        print "All tests succeed"
+        print("All tests succeed")
         sys.exit(0)
     else:
-        print "Fail, please review the output"
+        print("Fail, please review the output")
         sys.exit(-1)
 
 

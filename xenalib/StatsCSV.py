@@ -1,5 +1,6 @@
 import csv
 
+
 def _find_total_leaf_nodes(stats):
     leaf = 0
     if type(stats) is dict:
@@ -10,19 +11,22 @@ def _find_total_leaf_nodes(stats):
 
     return leaf
 
+
 def _find_total_nr_stats(stats):
     first_sample_key = stats.keys()[0]
     return _find_total_leaf_nodes(stats[first_sample_key])
+
 
 def _insert_centered_field(value, nr_leafs):
     line = [''] * nr_leafs
     line[nr_leafs / 2] = value
     return line
 
+
 def _build_unit_header_line(stats):
     header = ['timestamp']
     # first sample only
-    first_sample_key =  stats.keys()[0]
+    first_sample_key = stats.keys()[0]
     testnames = stats[first_sample_key].keys()
     for test in testnames:
         if type(stats[first_sample_key][test]) is dict:
@@ -30,16 +34,17 @@ def _build_unit_header_line(stats):
             if len(testunits):
                 header += testunits
                 continue
-        testunits = [ 'ND' ]
+        testunits = ['ND']
         header += testunits
     return header
+
 
 def _build_values_lines(stats):
     values = []
     sample_list = stats.keys()
     sample_list.sort()
     for sample in sample_list:
-        sample_values = [ sample ]
+        sample_values = [sample]
         testnames = stats[sample].keys()
         for test in testnames:
             if type(stats[sample][test]) is dict:
@@ -51,10 +56,11 @@ def _build_values_lines(stats):
         values.append(sample_values)
     return values
 
+
 def _build_test_header_line(stats, nr_columns):
     header = ['timestamp']
     # first sample only
-    first_sample_key =  stats.keys()[0]
+    first_sample_key = stats.keys()[0]
     testnames = stats[first_sample_key].keys()
     for test in testnames:
         nr_childs = _find_total_leaf_nodes(stats[first_sample_key][test])

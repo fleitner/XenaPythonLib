@@ -1,18 +1,22 @@
-import os
 import sys
 import time
 import logging
-import threading
 
-import KeepAliveThread
-import XenaPort
+from . import KeepAliveThread
+from . import XenaPort
 
 logger = logging.getLogger(__name__)
 
+
 class XenaManager:
-    def __init__(self, xsocket, owner, password = 'xena'):
+    def __init__(self, xsocket, owner, password='xena'):
         self.xsocket = xsocket
         self.ports = {}
+        self.keep_alive_thread = None
+        # FIXME: This is really weird.  The initialization can fail, which
+        # is bad practice.  But rather than do the refactor at the moment,
+        # we just set keep_alive_thread to None, and check for it in
+        # __del__
         if self.logon(password):
             logger.info("Logged successfully")
         else:
@@ -24,18 +28,20 @@ class XenaManager:
         self.keep_alive_thread.start()
 
     def __del__(self):
-        for pkey in self.ports.keys():
+        for pkey in list(self.ports.keys()):
             port_del = self.ports[pkey]
             port_del.reset()
             port_del.release()
             del port_del
 
         self.ports = {}
-        self.keep_alive_thread.stop()
+        if self.keep_alive_thread:
+            self.keep_alive_thread.stop()
         # FIXME: race
         time.sleep(1)
         self.xsocket.sendQueryVerify('c_logoff')
-        del self.keep_alive_thread
+        if self.keep_alive_thread:
+            del self.keep_alive_thread
 
     def _compose_str_command(self, cmd, argument):
         command = cmd + ' \"' + argument + '\"'
@@ -50,9 +56,8 @@ class XenaManager:
         command = self._compose_str_command('c_owner', owner[:8])
         return self.xsocket.sendQueryVerify(command)
 
-
     def add_port(self, module, port):
-        if self.ports.has_key((module, port)):
+        if (module, port) in self.ports:
             logger.error("Adding duplicated port")
             return
 
@@ -66,19 +71,19 @@ class XenaManager:
         return port_new
 
     def get_port(self, module, port):
-        if self.ports.has_key((module, port)):
+        if (module, port) in self.ports:
             return self.ports[(module, port)]
         return None
 
-    def remove_port(self, port):
-        if not self.ports.has_key((module, port)):
+    def remove_port(self, module, port):
+        if (module, port) not in self.ports:
             logger.error("Deleting unknown port")
             return
 
         port_del = self.ports.pop((module, port))
         port_del.reset()
         port_del.release()
-        del port_obj
+        del port_del
 
     def set_module_port(self, module_port):
         self.xsocket.sendCommand(module_port)

@@ -1,22 +1,22 @@
-import os
 import sys
 import time
 import logging
 import threading
 
-import BaseSocket
+from . import BaseSocket
 
 logger = logging.getLogger(__name__)
+
 
 class XenaSocket:
     reply_ok = '<OK>'
 
-    def __init__(self, hostname, port = 22611, timeout = 5):
+    def __init__(self, hostname, port=22611, timeout=5):
         logger.debug("Initializing")
         self.bsocket = BaseSocket.BaseSocket(hostname, port, timeout)
         self.access_semaphor = threading.Semaphore(1)
 
-    def set_dummymode(self, enable = True):
+    def set_dummymode(self, enable=True):
         logger.debug("Enabling dummymode")
         self.bsocket.set_dummymode(enable)
 
@@ -114,22 +114,18 @@ class XenaSocket:
 
     def sendQueryVerify(self, cmd):
         logger.debug("sendQueryVerify(%s)", cmd)
-        if not self.is_connected():
-            logger.warning("sendQueryVerify on a disconnected socket")
-            return False
-
-        resp = self.__sendQueryReply(cmd)
+        resp = self.sendQuery(cmd)
         if resp == self.reply_ok:
             logger.debug("SendQueryVerify(%s) Succeed", cmd)
             return True
+
         logger.debug("SendQueryVerify(%s) Fail", cmd)
         return False
 
 
-
 def testsuite():
-    import KeepAliveThread
-    import XenaSocket
+    from . import KeepAliveThread
+    from . import XenaSocket
 
     hostname = "10.16.46.156"
     port = 22611
@@ -140,22 +136,22 @@ def testsuite():
     s.set_dummymode(True)
     s.connect()
     if s.is_connected():
-        print "Connected"
+        print("Connected")
         keep_alive_thread = KeepAliveThread.KeepAliveThread(s, interval)
-        print "Starting Keep Alive Thread"
+        print("Starting Keep Alive Thread")
         keep_alive_thread.start()
         time.sleep(1)
-        print "Sending a command"
+        print("Sending a command")
         s.sendCommand("Hello World!")
-        print "Sending a query"
+        print("Sending a query")
         reply = s.sendQuery("Xena Command")
         if reply != '<OK>':
-            print "sendQuery failed"
+            print("sendQuery failed")
             sys.exit(-1)
 
-        print "Sending a query with check enabled"
+        print("Sending a query with check enabled")
         if not s.sendQueryVerify("Xena Command"):
-            print "sendQuery failed"
+            print("sendQuery failed")
             sys.exit(-1)
 
         keep_alive_thread.stop()
@@ -164,10 +160,10 @@ def testsuite():
         test_result = True
 
     if test_result:
-        print "All tests succeed"
+        print("All tests succeed")
         sys.exit(0)
     else:
-        print "Fail, please review the output"
+        print("Fail, please review the output")
         sys.exit(-1)
 
 
