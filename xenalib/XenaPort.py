@@ -154,13 +154,13 @@ class XenaPort:
                 data[entry_id] = self.__pack_tpldlatency_stats(parms, 3)
                 storage['pr_tpldlatency'] = data
             elif parms[1] == 'PR_TPLDJITTER':
-                if 'pr_tpljitter' in storage:
+                if 'pr_tpldjitter' in storage:
                     data = storage['pr_tpldjitter']
                 else:
                     data = {}
                 entry_id = parms[2].strip('[]')
                 data[entry_id] = self.__pack_tpldjitter_stats(parms, 3)
-                storage['pr_pldjitter'] = data
+                storage['pr_tpldjitter'] = data
             elif parms[1] == 'PR_FILTER':
                 if 'pr_filter' in storage:
                     data = storage['pr_filter']
